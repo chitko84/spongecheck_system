@@ -1,0 +1,33 @@
+{
+  "name": "spongecheck-2-0",
+  "private": true,
+  "version": "0.8.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "server": "node server/start.mjs",
+    "test:rules": "node tests/decision_engine_test.cjs",
+    "test:workflow": "node tests/case_workflow_test.cjs",
+    "test:telegram": "node tests/phase6_spongebot_test.mjs",
+    "build:offline": "node build-offline-preview.cjs",
+    "test:clicks": "node tests/phase8_clickability_audit.cjs",
+    "photos:download": "node scripts/download-free-photos.cjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.6.3",
+    "vite": "^5.4.15"
+  }
+}

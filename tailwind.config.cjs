@@ -1,0 +1,1 @@
+module.exports = { content: ['./index.html','./src/**/*.{ts,tsx}'], theme: { extend: { colors: { burgundy:'#5B1E35', ink:'#19273E', ivory:'#F8F5F2', coral:'#ED674B' }, fontFamily: { display:['Manrope','Inter','system-ui','sans-serif'], body:['Inter','system-ui','sans-serif'] } } }, plugins: [] };

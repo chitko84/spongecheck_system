@@ -1,0 +1,94 @@
+{
+  "license": "https://www.pexels.com/license/",
+  "note": "Each entry is a distinct free-to-use Pexels photograph; never represent as an SDP asset or verified inspection photo.",
+  "photos": {
+    "hero": {
+      "file": "hero.jpg",
+      "url": "https://images.pexels.com/photos/33327189/pexels-photo-33327189.jpeg?auto=compress&cs=tinysrgb&w=1800",
+      "photo_page": "https://www.pexels.com/photo/aerial-view-of-urban-road-and-green-wetland-landscape-33327189/",
+      "photographer": "C\u1ea7u \u0110\u01b0\u1eddng Vi\u1ec7t Nam",
+      "title": "Aerial view of urban road and green wetland landscape",
+      "image_id": 33327189
+    },
+    "editorial": {
+      "file": "editorial.jpg",
+      "url": "https://images.pexels.com/photos/39921710/pexels-photo-39921710.jpeg?auto=compress&cs=tinysrgb&w=1400",
+      "photo_page": "https://www.pexels.com/photo/scenic-wetland-boardwalk-overlooking-water-39921710/",
+      "photographer": "Ali Soheil",
+      "title": "Scenic Wetland Boardwalk Overlooking Water",
+      "image_id": 39921710
+    },
+    "feature": {
+      "file": "feature.jpg",
+      "url": "https://images.pexels.com/photos/8383683/pexels-photo-8383683.jpeg?auto=compress&cs=tinysrgb&w=1000",
+      "photo_page": "https://www.pexels.com/photo/boardwalk-over-a-wetland-8383683/",
+      "photographer": "Beyza Eren",
+      "title": "Boardwalk over a Wetland",
+      "image_id": 8383683
+    },
+    "access": {
+      "file": "access.jpg",
+      "url": "https://images.pexels.com/photos/10569068/pexels-photo-10569068.jpeg?auto=compress&cs=tinysrgb&w=1300",
+      "photo_page": "https://www.pexels.com/photo/neighbourhood-seen-through-pane-in-rain-droplets-10569068/",
+      "photographer": "Smail Dahmani",
+      "title": "Neighbourhood Seen through Pane in Rain Droplets",
+      "image_id": 10569068
+    },
+    "inspection": {
+      "file": "inspection.jpg",
+      "url": "https://images.pexels.com/photos/17226557/pexels-photo-17226557.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "photo_page": "https://www.pexels.com/photo/reeds-growing-on-wetland-17226557/",
+      "photographer": "Tom Fisk",
+      "title": "Reeds Growing on Wetland",
+      "image_id": 17226557
+    },
+    "asset-a01": {
+      "file": "asset-a01.jpg",
+      "url": "https://images.pexels.com/photos/18928152/pexels-photo-18928152.jpeg?auto=compress&cs=tinysrgb&w=1000",
+      "photo_page": "https://www.pexels.com/photo/concrete-storm-drain-culvert-18928152/",
+      "photographer": "Oscar S\u00e1nchez",
+      "title": "Concrete Storm Drain Culvert",
+      "image_id": 18928152
+    },
+    "asset-b02": {
+      "file": "asset-b02.jpg",
+      "url": "https://images.pexels.com/photos/13920251/pexels-photo-13920251.jpeg?auto=compress&cs=tinysrgb&w=1000",
+      "photo_page": "https://www.pexels.com/photo/marsh-reeds-on-swamp-13920251/",
+      "photographer": "Andiedson Lima",
+      "title": "Marsh Reeds on Swamp",
+      "image_id": 13920251
+    },
+    "asset-c03": {
+      "file": "asset-c03.jpg",
+      "url": "https://images.pexels.com/photos/6552179/pexels-photo-6552179.jpeg?auto=compress&cs=tinysrgb&w=1000",
+      "photo_page": "https://www.pexels.com/photo/bridge-with-road-above-river-near-forest-6552179/",
+      "photographer": "Finn Pietsch",
+      "title": "Bridge with Road above River near Forest",
+      "image_id": 6552179
+    },
+    "asset-d04": {
+      "file": "asset-d04.jpg",
+      "url": "https://images.pexels.com/photos/7807058/pexels-photo-7807058.jpeg?auto=compress&cs=tinysrgb&w=1000",
+      "photo_page": "https://www.pexels.com/photo/a-close-up-shot-of-a-storm-drain-7807058/",
+      "photographer": "Jo\u00e3o V\u00edtor Heinrichs",
+      "title": "A Close-Up Shot of a Storm Drain",
+      "image_id": 7807058
+    },
+    "asset-e05": {
+      "file": "asset-e05.jpg",
+      "url": "https://images.pexels.com/photos/5998901/pexels-photo-5998901.jpeg?auto=compress&cs=tinysrgb&w=1000",
+      "photo_page": "https://www.pexels.com/photo/a-wooden-bridge-on-the-lake-near-grass-5998901/",
+      "photographer": "Denis Ba",
+      "title": "Wooden Bridge on the Lake near Grass",
+      "image_id": 5998901
+    },
+    "asset-f06": {
+      "file": "asset-f06.jpg",
+      "url": "https://images.pexels.com/photos/31733893/pexels-photo-31733893.jpeg?auto=compress&cs=tinysrgb&w=1000",
+      "photo_page": "https://www.pexels.com/photo/concrete-bridge-reflecting-in-tranquil-pond-31733893/",
+      "photographer": "Vanessa Valkhof",
+      "title": "Concrete Bridge Reflecting in Tranquil Pond",
+      "image_id": 31733893
+    }
+  }
+}

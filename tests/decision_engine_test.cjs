@@ -1,0 +1,27 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const ts=require('typescript');
+const source=fs.readFileSync(path.join(__dirname,'..','src','decisionEngine.ts'),'utf8');
+const out=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS}}).outputText;
+fs.mkdirSync(path.join(__dirname,'rule-build'),{recursive:true});
+fs.writeFileSync(path.join(__dirname,'rule-build','decisionEngine.cjs'),out);
+const {evaluateInspection,sortDecisions}=require('./rule-build/decisionEngine.cjs');
+const base={assetId:'A-01',assetType:'Outlet',criticality:'high',daysSinceInspection:21,
+ observations:{debris:'visible',sediment:'unsure',vegetation:'normal'},provenance:'sample_fixture',action:'inspect_only'};
+let dry=evaluateInspection({...base,scenario:'dry'});
+let heavy=evaluateInspection({...base,scenario:'heavy'});
+assert.equal(dry.score,6);assert.equal(dry.priority,'elevated');
+assert.equal(heavy.score,9);assert.equal(heavy.priority,'urgent');
+assert.equal(heavy.factors.reduce((n,f)=>n+f.points,0),heavy.score);
+assert.equal(heavy.factors.find(f=>f.key==='rain').points,3);
+assert.equal(evaluateInspection({...base,scenario:'moderate'}).score,7);
+const proposed=evaluateInspection({...base,scenario:'dry',action:'clear_vegetation'});
+assert.equal(proposed.intervention,'review_required');assert.equal(proposed.priority,dry.priority);
+const dense=evaluateInspection({...base,observations:{...base.observations,vegetation:'dense'},scenario:'heavy',action:'remove_debris'});
+assert.equal(dense.intervention,'review_required');
+const unknown=evaluateInspection({...base,observations:{debris:'unsure',sediment:'unsure',vegetation:'unsure'},scenario:'heavy'});
+assert.equal(unknown.priority,'insufficient_evidence');assert.equal(unknown.score,null);assert.ok(unknown.uncertainties.length>=3);
+const sorted=sortDecisions([{id:'B',decision:dry},{id:'C',decision:unknown},{id:'A',decision:heavy}]);
+assert.deepEqual(sorted.map(x=>x.id),['A','B','C']);
+assert.equal(dry.ruleset,'demo-v1.0');
+console.log('DECISION ENGINE: 13 DETERMINISTIC ASSERTIONS PASSED');

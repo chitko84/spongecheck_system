@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import {mkdtemp,rm} from 'node:fs/promises';import os from 'node:os';import path from 'node:path';
+import {Store,createSpongeBot,makeHandler,configFromEnv} from '../server/spongebot.mjs';
+import {createServer} from 'node:http';
+const dir=await mkdtemp(path.join(os.tmpdir(),'spong-bot-test-'));
+const cfg=configFromEnv({TELEGRAM_BOT_TOKEN:'fake-token',TELEGRAM_WEBHOOK_SECRET:'test_secret_1234567890000',SPONGECHECK_DASHBOARD_KEY:'dashboard_key_for_test_abcdefghijklmn',TELEGRAM_ALLOWED_USER_IDS:'111',TELEGRAM_MANAGER_CHAT_ID:'999',SPONGECHECK_ALLOWED_ORIGIN:'https://spongecheck.example',SPONGECHECK_DATA_FILE:path.join(dir,'cases.json'),PORT:'0',TELEGRAM_BOT_USERNAME:'spongecheck_example_bot'});
+const store=new Store(cfg.dbFile);await store.init();
+const sent=[];
+const api={call:async(method,data)=>{sent.push({method,data});return {ok:true}},download:async()=> 'data:image/jpeg;base64,/9j/2Q=='};
+const bot=createSpongeBot(cfg,store,api);
+const server=createServer(makeHandler(cfg,store,bot));await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const base='http://127.0.0.1:'+server.address().port;
+const webhook=(id,text='',photo=null,from=111,secret=cfg.secret)=>fetch(base+'/webhooks/telegram',{method:'POST',headers:{'content-type':'application/json','X-Telegram-Bot-Api-Secret-Token':secret},body:JSON.stringify({update_id:id,message:{chat:{id:from,type:'private'},from:{id:from},date:1792630000,...(photo?{photo:[{file_id:photo,file_size:2048}],caption:'Photo of debris near outlet'}:{text})}})});
+try {
+ assert.equal((await fetch(base+'/api/telegram/status')).status,200);
+ assert.equal((await fetch(base+'/api/telegram/cases')).status,401);
+ assert.equal((await webhook(1,'/start',null,111,'wrongsecret')).status,401);
+ assert.equal((await webhook(2,'/inspect',null,222)).status,200);
+ assert.equal(store.records.seenUpdates.length,0,'unauthorized user not persisted');
+ assert.equal((await webhook(3,'/start')).status,200);
+ assert.equal((await webhook(4,'/inspect')).status,200);
+ assert.equal((await webhook(5,'/asset A-01')).status,200);
+ const r=await webhook(6,'','photo-1');assert.equal(r.status,200);
+ const result=await r.json();assert.equal(result.caseId,'SC-TG-000006');
+ assert.equal(store.records.cases.length,1);
+ assert.equal(store.records.cases[0].observations.inspectorConfirmed,false);
+ assert.equal((await webhook(6,'','photo-1')).status,200);
+ assert.equal(store.records.cases.length,1,'duplicates create only one case');
+ assert.equal((await webhook(7,'/status SC-TG-000006')).status,200);
+ assert.ok(sent.some(x=>x.data.chat_id==='999'),'manager alerted');
+ const unauth=await fetch(base+'/api/telegram/cases',{headers:{Authorization:'Bearer bad'}});assert.equal(unauth.status,401);
+ const auth=await fetch(base+'/api/telegram/cases',{headers:{Authorization:'Bearer '+cfg.key}});const cases=(await auth.json()).cases;assert.equal(cases.length,1);assert.equal(cases[0].source,'telegram');
+ const wrongOrigin=await fetch(base+'/api/telegram/cases',{headers:{Authorization:'Bearer '+cfg.key,Origin:'https://evil.example'}});assert.equal(wrongOrigin.status,403);
+ const allowedOrigin=await fetch(base+'/api/telegram/cases',{headers:{Authorization:'Bearer '+cfg.key,Origin:cfg.origin}});assert.equal(allowedOrigin.status,200);assert.equal(allowedOrigin.headers.get('access-control-allow-origin'),cfg.origin);
+ const storeReloaded=new Store(cfg.dbFile);await storeReloaded.init();assert.equal(storeReloaded.list().length,1);
+ console.log('PHASE 6 BACKEND TEST PASSED: webhook secrets, allowlist, commands, photo-to-case, manager alert, dedupe, persistence, dashboard access, CORS');
+} finally {server.close();await rm(dir,{recursive:true,force:true});}
