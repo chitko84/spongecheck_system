@@ -1,4 +1,4 @@
-# SpongeCheck 2.0
+# SpongeCheck
 
 ### Inspect smarter. Maintain responsibly.
 
@@ -7,9 +7,11 @@
 **Sime Darby Property University Hackathon 2026** · **Township of Tomorrow** · **Planet Track — Climate Resilience & Biodiversity**  
 **Institution:** Albukhary International University (AIU), Malaysia  
 **Project status:** Functional hackathon prototype; not a production field-management system  
-**Source code:** [github.com/chitko84/spongecheck_system](https://github.com/chitko84/spongecheck_system)
+**Live application:** [spongecheck-system-iwpa.vercel.app](https://spongecheck-system-iwpa.vercel.app/)  
+**Source repository:** [github.com/chitko84/spongecheck_system](https://github.com/chitko84/spongecheck_system)  
+**Telegram interface:** [@SpongeCheckAI2026Bot](https://t.me/SpongeCheckAI2026Bot) (approved demonstration users only)
 
-> **Live demo:** Add the exact public Vercel deployment URL here before final submission. The team's production frontend build has passed and the Vercel deployment was reported working on 23 October 2026; the URL was not supplied for this document. The Telegram backend requires separate hosting and configuration.
+> **Demonstration scope:** The public Vercel link hosts the web application. The Telegram reporting interface depends on a separately configured, running Node.js webhook service and authorized credentials. Its availability and stored cases should not be inferred from the frontend link alone. Browser maintenance approvals are simulated and are not real-world work authorizations.
 
 ---
 
@@ -17,7 +19,7 @@
 
 Townships increasingly depend on stormwater systems that do more than carry runoff. Wetlands, planted swales, detention ponds, inlets and outlets must remain functional while continuing to support water quality, habitat and public amenity. Maintaining these assets involves a deceptively difficult operational question: **how can a field observation become a timely, explainable and environmentally responsible maintenance decision?**
 
-**SpongeCheck 2.0** explores that question through a mobile-first web application and a companion Telegram bot, **SpongeBot**. An inspector can document visible conditions; a manager can compare inspection priorities under explicitly simulated rainfall scenarios; a nature reviewer can examine sensitive proposed work; and the demo workflow can record assignment, completion photographs, verification and exportable evidence.
+**SpongeCheck** explores that question through a mobile-first web application and a companion Telegram bot, **SpongeBot**. An inspector can document visible conditions; a manager can compare inspection priorities under explicitly simulated rainfall scenarios; a nature reviewer can examine sensitive proposed work; and the demo workflow can record assignment, completion photographs, verification and exportable evidence.
 
 The distinguishing design choice is **traceability rather than opaque automation**. SpongeCheck's *Decision X-Ray* exposes every factor contributing to an illustrative priority score. Its maintenance state machine prevents a review-required proposal from advancing to assignment before simulated specialist approval. Its before-and-after comparison links a proposed action to documented completion and verification.
 
@@ -114,7 +116,7 @@ These are illustrative asset records—not surveyed, geolocated or verified SDP 
 
 ### 4.2 SpongeBot: Telegram photo intake
 
-An allowlisted inspector can interact with **@SpongeCheckAI2026Bot** using `/inspect`, `/asset A-01`, a photograph with an optional caption, and `/status <case-id>`. When a webhook and server are configured, the backend creates a case such as `SC-TG-73599370` and can send a manager notification to a configured chat.
+An allowlisted inspector can interact with **@SpongeCheckAI2026Bot** using `/inspect`, `/asset A-01`, a photograph with an optional caption, and a status-check command using the returned case reference. When a webhook and server are configured, the backend creates a case such as `SC-TG-73599370` and can send a manager notification to a configured chat.
 
 A **Telegram Updates** page in the web application retrieves these records from the protected backend API. **This is deliberately a separate, read-only inbox:** Telegram cases are **not** automatically turned into editable browser work orders or granted ecological approval. Submitted photo observations remain **awaiting human confirmation**.
 
@@ -222,7 +224,7 @@ The following walkthrough separates the **live bot intake** from the **browser-m
 
 1. Open **@SpongeCheckAI2026Bot** from an allowed Telegram user account.
 2. Send `/start`, then `/inspect` and `/asset A-01`.
-3. Upload a **demonstration photograph** and a short caption; receive an `SC-TG-...` case ID.
+3. Upload a **demonstration photograph** and a short caption; receive a unique Telegram case ID.
 4. If a separate manager chat is configured and reachable, inspect its notification.
 5. On the web app, select **Operations Manager → Telegram Updates**.
 6. Enter the backend HTTPS origin and the private dashboard key, then load cases.
@@ -320,21 +322,23 @@ cp .env.example .env
 # Copy-Item .env.example .env
 ```
 
-Edit `.env` locally and **never commit it**. For local development, use:
+Edit `.env` privately and **never commit it**. The checked-in [`.env.example`](.env.example) documents the supported keys; actual bot credentials and access keys are intentionally excluded from public documentation.
 
-```dotenv
-PORT=8787
-SPONGECHECK_DATA_FILE=./.private-spongebot/data.json
-SPONGECHECK_ALLOWED_ORIGIN=http://localhost:5173
-SPONGECHECK_PUBLIC_APP_URL=http://localhost:5173
-SPONGECHECK_DASHBOARD_KEY=REPLACE_WITH_LONG_RANDOM_PRIVATE_VALUE
-TELEGRAM_BOT_TOKEN=REPLACE_LOCALLY
-TELEGRAM_BOT_USERNAME=SpongeCheckAI2026Bot
-TELEGRAM_WEBHOOK_SECRET=REPLACE_WITH_RANDOM_ALLOWED_CHARACTERS
-TELEGRAM_ALLOWED_USER_IDS=YOUR_NUMERIC_TELEGRAM_USER_ID
-TELEGRAM_MANAGER_CHAT_ID=
-TELEGRAM_WEBHOOK_URL=
-```
+| Configuration key | Purpose and configuration rule |
+| --- | --- |
+| `PORT` | HTTP listening port; defaults to `8787` locally. Render provides its own `PORT`. |
+| `SPONGECHECK_DATA_FILE` | Local JSON database location; default is `.private-spongebot/data.json`. Use a durable mounted path for retained records. |
+| `SPONGECHECK_ALLOWED_ORIGIN` | Allowed frontend origin. Local development uses `http://localhost:5173`; the hosted frontend uses `https://spongecheck-system-iwpa.vercel.app`. |
+| `SPONGECHECK_PUBLIC_APP_URL` | Public frontend address: `https://spongecheck-system-iwpa.vercel.app` for the deployed website. |
+| `SPONGECHECK_DASHBOARD_KEY` | Private random access key, **at least 24 characters**, for the read-only Telegram dashboard API. |
+| `TELEGRAM_BOT_TOKEN` | Private bot token issued by Telegram BotFather. |
+| `TELEGRAM_BOT_USERNAME` | `SpongeCheckAI2026Bot`. |
+| `TELEGRAM_WEBHOOK_SECRET` | Private Telegram webhook secret, **at least 20 characters**; only letters, numbers, `_` or `-`. |
+| `TELEGRAM_ALLOWED_USER_IDS` | Comma-separated numeric Telegram user IDs allowed to submit demo cases. |
+| `TELEGRAM_MANAGER_CHAT_ID` | Optional private chat ID for manager notifications. |
+| `TELEGRAM_WEBHOOK_URL` | Public HTTPS webhook URL registered via `server/configure-webhook.mjs`. |
+
+For security, no production token, access key, personal Telegram ID or live backend URL is embedded in this public README. A working Telegram setup requires the private values to be provided through server environment settings.
 
 Start the backend in a **second terminal**:
 
@@ -355,7 +359,7 @@ Vite is configured to proxy local `/api` requests to the Node backend. For live 
 | `/inspect` | Begin a photo inspection |
 | `/asset A-01` | Choose one of the six fictional locations |
 | Send a photo | Store a case with caption and unconfirmed observations |
-| `/status SC-TG-...` | Read the status of a case belonging to the same chat user |
+| `/status` followed by a case ID | Read the status of a case belonging to the same chat user |
 | `/cancel` | Cancel the current intake sequence |
 
 ### Backend API
@@ -370,13 +374,15 @@ Telegram media intake is limited to eligible **JPEG photographs under 2 MB**. In
 
 ### Register the HTTPS webhook
 
-After deploying an HTTPS backend, set `TELEGRAM_WEBHOOK_URL` locally to `https://YOUR-BACKEND-HOST/webhooks/telegram`, ensuring the token and secret agree with the hosted environment. Then run:
+After deploying the backend to a public HTTPS Node.js service, configure `TELEGRAM_WEBHOOK_URL` as **the backend's public origin plus `/webhooks/telegram`**, making sure the private token and secret match those on the host. From a secured local environment, register the webhook:
 
 ```bash
 node --env-file=.env server/configure-webhook.mjs
 ```
 
-Verify `GET https://YOUR-BACKEND-HOST/api/telegram/status`, send a fresh test photo and inspect the case from **Telegram Updates** using the protected dashboard key. An active-looking configuration response **alone is not proof of successful end-to-end delivery**.
+Check the backend's `/api/telegram/status` endpoint, send a new photo from an approved account, and inspect its record through **Telegram Updates** using the dashboard key. **The frontend URL is not a webhook endpoint.** A configured status response by itself does not prove that Telegram updates are being delivered.
+
+The Telegram bot and browser inspection workflow remain intentionally separate. Only Telegram-origin reports are loaded from the server's read-only inbox; browser-origin maintenance cases stay in the browser.
 
 ## 12. Testing and verification evidence
 
@@ -384,11 +390,11 @@ The repository includes a test suite and QA notes; verification was performed at
 
 | Verification area | Evidence / current status |
 | --- | --- |
-| Deterministic decision rules | `node tests/decision_engine_test.cjs` — **13 assertions passed** in the supplied source |
-| Maintenance state transitions and guards | `node tests/case_workflow_test.cjs` — **20+ assertions passed** |
-| Telegram webhook/authentication/persistence | `node tests/phase6_spongebot_test.mjs` — **passed** using a mocked Telegram API and temporary store |
+| Deterministic decision rules | `npm run test:rules` — **13 deterministic assertions passed**, locally re-run against the supplied source |
+| Maintenance state transitions and guards | `npm run test:workflow` — **20+ guard and transition assertions passed**, locally re-run |
+| Telegram webhook/authentication/persistence | `npm run test:telegram` — **passed** using a mocked Telegram API and temporary store, locally re-run |
 | Browser interaction and responsive regression | Existing automated UI suites and test logs in `tests/` and `release/FINAL_QA_REPORT.md` |
-| React/Vite production build | Project operator reported **`npm run build` succeeded on 23 October 2026** after TypeScript fixes, and reported the Vercel site working |
+| React/Vite production build | The project team reported **`npm run build` succeeded on 23 October 2026** after TypeScript corrections; the public site is linked at the beginning of this README |
 | Live Telegram intake | Project demonstration showed an actual bot submission and case acknowledgement; not independently established on permanent backend hosting |
 | Real SDP field validation and impact measurement | **Not performed** |
 | Production identity, secure multiuser synchronization and durable host monitoring | **Not implemented** |
@@ -470,7 +476,7 @@ Move from browser-only demonstrations and private JSON storage to a shared datab
 
 ### Frontend: Vercel
 
-Deploy the Vite application from the repository root:
+The public SpongeCheck frontend is available at **[https://spongecheck-system-iwpa.vercel.app/](https://spongecheck-system-iwpa.vercel.app/)**. It uses Vite static deployment from the repository root:
 
 | Setting | Value |
 | --- | --- |
@@ -527,12 +533,12 @@ SpongeCheck was developed as a student innovation prototype in response to the *
 
 ### Code and asset rights
 
-The repository does **not currently include an explicit software `LICENSE` file** in the reviewed source package. Public repository visibility is not the same as granting unrestricted reuse. Project maintainers should add an appropriate license only after confirming they have authority to license all code and assets. Third-party photography remains subject to its own license and source conditions.
+The reviewed source package has no standalone software `LICENSE` file. Publication of the repository does not by itself grant permission to copy or redistribute its code. Third-party photographs are separately governed by their original licensing terms, as documented in [`image-credits.md`](image-credits.md).
 
 ---
 
 ### Final statement
 
-**SpongeCheck 2.0 is a working demonstration of a more accountable maintenance process—not a claim of autonomous environmental decision-making.** Its purpose is to show how simple reporting, transparent prioritization, ecological oversight and verifiable evidence could be joined into a practical operational workflow for greener, more resilient townships.
+**SpongeCheck is a working demonstration of a more accountable maintenance process—not a claim of autonomous environmental decision-making.** Its purpose is to show how simple reporting, transparent prioritization, ecological oversight and verifiable evidence could be joined into a practical operational workflow for greener, more resilient townships.
 
 **Inspect smarter. Maintain responsibly.**
