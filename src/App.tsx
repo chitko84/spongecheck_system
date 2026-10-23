@@ -158,11 +158,21 @@ export default class App extends React.Component<Record<string,never>,State> {
     observationConfirmed:false,reportError:'',reportPhotoError:''
   });this.nav('/app/report');};
   chooseReportPlace=(id:string)=>{
-    const wasSample=this.state.reportPhotoSource==='sample';
-    this.setState({reportPlace:id,reportError:'',...(wasSample?{
-      reportPhotoName:'',reportPhotoData:'',reportPhotoSource:null,reportMode:'manual_only' as AnalysisMode,
-      observations:{...EMPTY_OBSERVATIONS},observationConfirmed:false
-    }:{})});
+    // Clear a sample photo when switching locations, preserving the type of React state.
+    if (this.state.reportPhotoSource === 'sample') {
+      this.setState({
+        reportPlace:id,
+        reportError:'',
+        reportPhotoName:'',
+        reportPhotoData:'',
+        reportPhotoSource:null,
+        reportMode:'manual_only',
+        observations:{...EMPTY_OBSERVATIONS},
+        observationConfirmed:false
+      });
+    } else {
+      this.setState({reportPlace:id,reportError:''});
+    }
   };
   useExamplePhoto=()=>{
     const place=this.getPlace(this.state.reportPlace);
